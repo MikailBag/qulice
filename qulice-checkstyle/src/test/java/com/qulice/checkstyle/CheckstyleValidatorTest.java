@@ -36,6 +36,7 @@ import com.qulice.spi.Violation;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+
 import org.cactoos.io.ResourceOf;
 import org.cactoos.list.ListOf;
 import org.cactoos.text.FormattedText;
@@ -80,7 +81,7 @@ public final class CheckstyleValidatorTest {
     /**
      * License text.
      */
-    private static final String LICENSE = "Hello.";
+    private static final String[] LICENSE = {"Hello."};
 
     /**
      * Rule for testing.
@@ -98,31 +99,13 @@ public final class CheckstyleValidatorTest {
      */
     @Test
     public void catchesCheckstyleViolationsInLicense() throws Exception {
-        final Environment.Mock mock = new Environment.Mock();
-        final File license = this.rule.savePackageInfo(
-            new File(mock.basedir(), CheckstyleValidatorTest.DIRECTORY)
-        ).withLines("License-1.", "", "License-2.")
-            .withEol("\n")
-            .file();
-        final String content =
-            // @checkstyle StringLiteralsConcatenation (4 lines)
-            // @checkstyle RegexpSingleline (1 line)
-            "/" + "**\n * License-3.\n *\n * License-2.\n */\n"
-                + "package foo;\n"
-                + "public class Foo { }\n";
-        final String name = "Foo.java";
-        final Environment env = mock.withParam(
-            CheckstyleValidatorTest.LICENSE_PROP,
-            this.toUrl(license)
-        ).withFile(String.format("src/main/java/foo/%s", name), content);
-        final Collection<Violation> results =
-            new CheckstyleValidator(env)
-                .validate(env.files(name));
+        final String file = "InvalidLicense.java";
+        Collection<Violation> results = runValidationWithLicense(file, new String[]{"License-1.", "", "License-2."}, false);
         MatcherAssert.assertThat(
             results,
             Matchers.hasItem(
                 new ViolationMatcher(
-                    "Line does not match expected header line of", name
+                    "Line does not match expected header line of", file
                 )
             )
         );
@@ -781,14 +764,28 @@ public final class CheckstyleValidatorTest {
      */
     private Collection<Violation> runValidation(final String file,
         final boolean passes) throws IOException {
+        return runValidationWithLicense(file, CheckstyleValidatorTest.LICENSE, passes);
+    }
+
+    /**
+     * Returns collection with Checkstyle validation results.
+     * @param file File to check.
+     * @param license Expected license
+     * @param passes Whether validation is expected to pass.
+     * @return String containing validation results in textual form.
+     * @throws IOException In case of error
+     */
+    private Collection<Violation> runValidationWithLicense(final String file,
+        final String[] license,
+        final boolean passes) throws IOException {
         final Environment.Mock mock = new Environment.Mock();
-        final File license = this.rule.savePackageInfo(
+        final File licenseFile = this.rule.savePackageInfo(
             new File(mock.basedir(), CheckstyleValidatorTest.DIRECTORY)
-        ).withLines(CheckstyleValidatorTest.LICENSE)
+        ).withLines(license)
             .withEol("\n").file();
         final Environment env = mock.withParam(
             CheckstyleValidatorTest.LICENSE_PROP,
-            this.toUrl(license)
+            this.toUrl(licenseFile)
         )
             .withFile(
                 String.format("src/main/java/foo/%s", file),
