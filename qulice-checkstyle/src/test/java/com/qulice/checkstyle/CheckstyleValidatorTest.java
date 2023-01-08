@@ -197,7 +197,6 @@ public final class CheckstyleValidatorTest {
      * @throws Exception when error.
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void reportsErrorWhenCommentOrJavadocIsTooLong() throws Exception {
         final Collection<Violation> results =
             this.runValidation("TooLongLines.java", false);
@@ -220,7 +219,6 @@ public final class CheckstyleValidatorTest {
      * @throws Exception when error.
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void reportsAllCharEncodingUsages() throws Exception {
         final String message =
             "Use java.nio.charset.StandardCharsets instead";
@@ -347,7 +345,6 @@ public final class CheckstyleValidatorTest {
      * @throws Exception In case of error
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void allowsOnlyProperlyNamedLocalVariables() throws Exception {
         final String file = "LocalVariableNames.java";
         final Collection<Violation> results = this.runValidation(
@@ -407,7 +404,6 @@ public final class CheckstyleValidatorTest {
      * @throws Exception In case of error
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void allowsOnlyProperlyOrderedAtClauses() throws Exception {
         final String file = "AtClauseOrder.java";
         final Collection<Violation> results = this.runValidation(
@@ -554,7 +550,7 @@ public final class CheckstyleValidatorTest {
      * @throws Exception In case of error
      */
     @Test
-    @SuppressWarnings({"unchecked", "PMD.AvoidDuplicateLiterals"})
+    @SuppressWarnings({"PMD.AvoidDuplicateLiterals"})
     public void distinguishesValidCatchParameterNames() throws Exception {
         final String file = "CatchParameterNames.java";
         final Collection<Violation> results = this.runValidation(
@@ -604,7 +600,7 @@ public final class CheckstyleValidatorTest {
      * @throws Exception In case of error
      */
     @Test
-    @SuppressWarnings({"unchecked", "PMD.AvoidDuplicateLiterals"})
+    @SuppressWarnings({"PMD.AvoidDuplicateLiterals"})
     public void rejectsSpacesInsideMethods() throws Exception {
         final String file = "BlankLinesInsideMethodsFail.java";
         final Collection<Violation> result = this.runValidation(
@@ -638,7 +634,6 @@ public final class CheckstyleValidatorTest {
      * @throws Exception In case of error
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void rejectsUppercaseAbbreviations() throws Exception {
         final String file = "InvalidAbbreviationAsWordInNameXML.java";
         final Collection<Violation> results = this.runValidation(
@@ -705,7 +700,6 @@ public final class CheckstyleValidatorTest {
      * @throws Exception If error
      */
     @Test
-    @SuppressWarnings("unchecked")
     public void rejectsNonDiamondOperatorUsage() throws Exception {
         final String file = "InvalidDiamondsUsage.java";
         final String name = "DiamondOperatorCheck";
