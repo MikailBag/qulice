@@ -35,6 +35,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.ThreadSafeReportListener;
+import net.sourceforge.pmd.Report.ConfigurationError;
+import net.sourceforge.pmd.Report.ProcessingError;
 import net.sourceforge.pmd.stat.Metric;
 
 /**
@@ -52,7 +54,7 @@ final class PmdListener implements ThreadSafeReportListener {
     /**
      * Violations.
      */
-    private final Collection<RuleViolation> violations;
+    private final Collection<PmdError> violations;
 
     /**
      * Public ctor.
@@ -74,16 +76,23 @@ final class PmdListener implements ThreadSafeReportListener {
             this.env.basedir().toString().length()
         );
         if (!this.env.exclude("pmd", name)) {
-            this.violations.add(violation);
+            this.violations.add(new PmdError.OfRuleViolation(violation));
         }
+    }
+
+    public void onProcessingError(final ProcessingError error) {
+        this.violations.add(new PmdError.OfProcessingError(error));
+    }
+
+    public void onConfigError(final ConfigurationError error) {
+        this.violations.add(new PmdError.OfConfigError(error));
     }
 
     /**
      * Get list of violations.
      * @return List of violations
      */
-    public Collection<RuleViolation> getViolations() {
+    public Collection<PmdError> errors() {
         return Collections.unmodifiableCollection(this.violations);
     }
-
 }

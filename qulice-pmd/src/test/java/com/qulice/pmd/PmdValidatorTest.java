@@ -681,4 +681,19 @@ public final class PmdValidatorTest {
             )
         ).validate();
     }
+
+    /**
+     * PmdValidator properly parses text blocks as annotation values.
+     * @throws Exception If something wrong happens inside.
+     */
+    @Test
+    public void supportsTextBlocksInAnnotations() throws Exception {
+        new PmdAssert(
+            "SupportsTextBlocksInAnnotations.java",
+            Matchers.is(true),
+            Matchers.not(
+                Matchers.containsString("Can't find resource")
+            )
+        ).validate();
+    }
 }

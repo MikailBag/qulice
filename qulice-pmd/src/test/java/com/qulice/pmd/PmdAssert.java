@@ -34,15 +34,24 @@ import com.qulice.spi.Violation;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.cactoos.text.TextOf;
 import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * PMD Validator assertions.
  * @since 0.16
  */
 final class PmdAssert {
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+        Logger.getLogger("").setLevel(Level.FINEST);
+    }
+
     /**
      * File to validate.
      */
@@ -72,7 +81,7 @@ final class PmdAssert {
     }
 
     /**
-     * Validated given file against PMD.
+     * Validates given file against PMD.
      * @throws Exception In case of error.
      */
     public void validate() throws Exception {
