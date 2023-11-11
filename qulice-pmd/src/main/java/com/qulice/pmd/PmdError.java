@@ -141,7 +141,11 @@ public interface PmdError {
 
         @Override
         public String description() {
-            return this.error.getMsg() + this.error.getDetail();
+            return new StringBuilder()
+                .append(this.error.getMsg())
+                .append(": ")
+                .append(this.error.getDetail())
+                .toString();
         }
     }
 

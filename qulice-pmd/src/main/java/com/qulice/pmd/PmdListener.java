@@ -82,10 +82,16 @@ final class PmdListener implements ThreadSafeReportListener {
 
     /**
      * Registers a new ProcessingError.
+     *
+     * @todo #1129 If was added to avoid failing build, but there should be
+     * better place for this check.
+     *
      * @param error A processing error that needs to be reported.
      */
     public void onProcessingError(final ProcessingError error) {
-        this.violations.add(new PmdError.OfProcessingError(error));
+        if (error.getFile().endsWith(".java")) {
+            this.violations.add(new PmdError.OfProcessingError(error));
+        }
     }
 
     /**
