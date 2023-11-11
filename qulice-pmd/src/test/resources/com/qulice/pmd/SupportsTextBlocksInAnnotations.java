@@ -17,6 +17,6 @@ package foo;
             @ApiResponse(responseCode = "404", description = "Repository not found")
         }
     )
-public cass SupportsTextBlocksInAnnotations {
+public class SupportsTextBlocksInAnnotations {
     
-
+}
