@@ -33,10 +33,10 @@ import com.qulice.spi.Environment;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import net.sourceforge.pmd.RuleViolation;
-import net.sourceforge.pmd.ThreadSafeReportListener;
 import net.sourceforge.pmd.Report.ConfigurationError;
 import net.sourceforge.pmd.Report.ProcessingError;
+import net.sourceforge.pmd.RuleViolation;
+import net.sourceforge.pmd.ThreadSafeReportListener;
 import net.sourceforge.pmd.stat.Metric;
 
 /**
@@ -80,10 +80,18 @@ final class PmdListener implements ThreadSafeReportListener {
         }
     }
 
+    /**
+     * Registers a new ProcessingError.
+     * @param error A processing error that needs to be reported.
+     */
     public void onProcessingError(final ProcessingError error) {
         this.violations.add(new PmdError.OfProcessingError(error));
     }
 
+    /**
+     * Registers a new ConfigurationError.
+     * @param error A configuration error that needs to be reported.
+     */
     public void onConfigError(final ConfigurationError error) {
         this.violations.add(new PmdError.OfConfigError(error));
     }

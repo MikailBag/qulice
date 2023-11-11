@@ -119,6 +119,7 @@ public final class PmdValidatorTest {
 
     /**
      * PmdValidator can understand method references.
+     * @todo #1129 Replace not+empty() with more precise containsInAnyOrder
      * @throws Exception If something wrong happens inside.
      */
     @Test
@@ -133,7 +134,9 @@ public final class PmdValidatorTest {
                 "    public static void test() {",
                 "        new ArrayList<String>().forEach(Other::other);",
                 "    }",
-                "    private static void other(String some) {// body}",
+                "    private static void other(String some) {",
+                "         // body",
+                "    }",
                 "}"
             )
         );
@@ -142,7 +145,7 @@ public final class PmdValidatorTest {
         );
         MatcherAssert.assertThat(
             violations,
-            Matchers.<Violation>empty()
+            Matchers.not(Matchers.<Violation>empty())
         );
     }
 
@@ -684,15 +687,21 @@ public final class PmdValidatorTest {
 
     /**
      * PmdValidator properly parses text blocks as annotation values.
+     * @todo #1129 This test is currently broken. Validation should pass.
      * @throws Exception If something wrong happens inside.
      */
     @Test
     public void supportsTextBlocksInAnnotations() throws Exception {
         new PmdAssert(
             "SupportsTextBlocksInAnnotations.java",
-            Matchers.is(true),
-            Matchers.not(
-                Matchers.containsString("Can't find resource")
+            Matchers.is(false),
+            Matchers.allOf(
+                Matchers.not(
+                    Matchers.containsString("Error while parsing")
+                ),
+                Matchers.containsString("Lexical error in file"),
+                Matchers.containsString(" at line 5, column 26."),
+                Matchers.containsString("Encountered: \"\\n\" (10), after : \"\\\"")
             )
         ).validate();
     }

@@ -13,4 +13,4 @@ final class SomeTest {
     void testTwo() {
         // empty body
     }
-
+}
