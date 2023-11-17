@@ -264,7 +264,6 @@ public final class ChecksTest {
         void foo() {
             System.out.println("Hello: " + test);
         }
-
     }
 
 }
