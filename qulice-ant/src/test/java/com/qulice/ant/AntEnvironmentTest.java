@@ -32,6 +32,9 @@ package com.qulice.ant;
 
 import com.qulice.spi.Environment;
 import java.io.File;
+import java.util.Collection;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -50,8 +53,6 @@ public class AntEnvironmentTest {
      * @throws Exception If something wrong happens inside
      */
     @Test
-    @Disabled
-    @SuppressWarnings("PMD.UncommentedEmptyMethodBody")
     public void buildsClassloader() throws Exception {
         final Environment env = new AntEnvironment(
             new AntProject.Fake(
@@ -71,12 +72,26 @@ public class AntEnvironmentTest {
 
     /**
      * AntEnvironment can return the files matching the specified pattern.
+     *
      * @throws Exception If something wrong happens inside
      */
     @Test
-    @Disabled
-    @SuppressWarnings("PMD.UncommentedEmptyMethodBody")
     public void returnsFiles() throws Exception {
+        final Environment env = new AntEnvironment(
+            new AntProject.Fake(
+                ignored -> {
+                    throw new UnsupportedOperationException();
+                },
+                () -> {
+                    throw new UnsupportedOperationException();
+                }
+            ),
+            new AntPath.Fake(new String[]{"/foo.java", "bar.java"}),
+            new File("/some/build/out"),
+            new AntPath.Fake(new String[]{"/libfoo", "/libbar"})
+        );
+        final Collection<File> files = env.files("*");
+        MatcherAssert.assertThat(files, Matchers.containsInAnyOrder());
     }
 
     /**

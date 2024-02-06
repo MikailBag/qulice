@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -88,7 +89,7 @@ public final class AntEnvironment implements Environment {
         final File clss,
         final AntPath clsspth) {
         this.project = prjct;
-        this.sources = srcs;
+        this.sources = Objects.requireNonNull(srcs);
         this.classes = clss;
         this.classpath = clsspth;
     }
