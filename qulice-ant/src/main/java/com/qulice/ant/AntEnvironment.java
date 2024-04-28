@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011-2023 Qulice.com
+ * Copyright (c) 2011-2024 Qulice.com
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,12 +42,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.types.Path;
 
 /**
  * Environment, passed from ant task to validators.
@@ -57,12 +57,12 @@ public final class AntEnvironment implements Environment {
     /**
      * Ant project.
      */
-    private final Project project;
+    private final AntProject project;
 
     /**
      * Sources dirs.
      */
-    private final Path sources;
+    private final AntPath sources;
 
     /**
      * Classes dir (only one dir is supported).
@@ -73,7 +73,7 @@ public final class AntEnvironment implements Environment {
      * Classpath dirs and files.
      */
     @SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
-    private final Path classpath;
+    private final AntPath classpath;
 
     /**
      * Public ctor.
@@ -84,12 +84,12 @@ public final class AntEnvironment implements Environment {
      * @checkstyle ParameterNumber (5 lines)
      */
     public AntEnvironment(
-        final Project prjct,
-        final Path srcs,
+        final AntProject prjct,
+        final AntPath srcs,
         final File clss,
-        final Path clsspth) {
+        final AntPath clsspth) {
         this.project = prjct;
-        this.sources = srcs;
+        this.sources = Objects.requireNonNull(srcs);
         this.classes = clss;
         this.classpath = clsspth;
     }
@@ -177,7 +177,7 @@ public final class AntEnvironment implements Environment {
     }
 
     /**
-     * Creates URL ClassLoadere in privileged block.
+     * Creates URL ClassLoader in privileged block.
      *
      * @since 0.1
      */

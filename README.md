@@ -1,4 +1,4 @@
-<img alt="logo" src="http://img.qulice.com/logo.svg" width="200px" height="55px"/>
+<img alt="logo" src="https://www.qulice.com/logo.svg" width="200px" height="55px"/>
 
 [![EO principles respected here](https://www.elegantobjects.org/badge.svg)](https://www.elegantobjects.org)
 [![DevOps By Rultor.com](http://www.rultor.com/b/yegor256/qulice)](http://www.rultor.com/p/yegor256/qulice)
@@ -9,7 +9,6 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.qulice/qulice/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.qulice/qulice)
 [![codebeat badge](https://codebeat.co/badges/9454ea39-1f11-4f6b-b086-ec5a2d658174)](https://codebeat.co/projects/github-com-teamed-qulice)
 [![codecov](https://codecov.io/gh/yegor256/qulice/branch/master/graph/badge.svg)](https://codecov.io/gh/yegor256/qulice)
-![Lines of code](https://img.shields.io/tokei/lines/github/yegor256/qulice)
 [![Hits-of-Code](https://hitsofcode.com/github/yegor256/qulice)](https://hitsofcode.com/view/github/yegor256/qulice)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/yegor256/qulice/blob/master/LICENSE.txt)
 
@@ -48,12 +47,7 @@ Just add this plugin to your `pom.xml`:
 </build>
 ```
 
-Then, make sure you have the JDK binaries (including the Java compiler `javac`)
-accessible from your `PATH` environment variable (e.g. if you have JDK 1.8.0
-installed in Windows your PATH should contain something like `C:\Program
-Files\Java\jdk1.8.0\bin`).
-
-Also remember that we support Maven version >= 3.1.0.
+Also remember that we support Maven 3.1+.
 
 The path to license has to be declared in the following format:
 `file:${basedir}/LICENSE.txt`, it's the default value, one can use any full path
@@ -80,4 +74,4 @@ sending us your pull request please run full Maven build:
 $ mvn clean install -Pqulice
 ```
 
-Keep in mind that JDK7 and Maven 3.1.0 are the lowest versions you may use.
+Keep in mind that JDK 11+ and Maven 3.8+ are the lowest versions you may use.

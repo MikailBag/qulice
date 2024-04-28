@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011-2023 Qulice.com
+ * Copyright (c) 2011-2024 Qulice.com
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +36,6 @@ import com.qulice.spi.Violation;
 import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
-import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.util.datasource.DataSource;
 import net.sourceforge.pmd.util.datasource.FileDataSource;
 
@@ -64,21 +64,18 @@ public final class PmdValidator implements ResourceValidator {
     public Collection<Violation> validate(final Collection<File> files) {
         final SourceValidator validator = new SourceValidator(this.env);
         final Collection<DataSource> sources = this.getNonExcludedFiles(files);
-        final Collection<RuleViolation> breaches = validator.validate(
+        final Collection<PmdError> errors = validator.validate(
             sources, this.env.basedir().getPath()
         );
         final Collection<Violation> violations = new LinkedList<>();
-        for (final RuleViolation breach : breaches) {
+        for (final PmdError error : errors) {
             violations.add(
                 new Violation.Default(
                     this.name(),
-                    breach.getRule().getName(),
-                    breach.getFilename(),
-                    String.format(
-                        "%d-%d",
-                        breach.getBeginLine(), breach.getEndLine()
-                    ),
-                    breach.getDescription()
+                    error.name(),
+                    error.fileName(),
+                    error.lines(),
+                    error.description()
                 )
             );
         }

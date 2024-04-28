@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011-2023 Qulice.com
+ * Copyright (c) 2011-2024 Qulice.com
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +44,11 @@ import com.qulice.spi.Violation;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -238,7 +243,7 @@ public final class CheckstyleValidator implements ResourceValidator {
         final URL url;
         if (name.startsWith("file:")) {
             try {
-                url = new URL(name);
+                url = Paths.get(name.substring(5)).toUri().toURL();
             } catch (final MalformedURLException ex) {
                 throw new IllegalStateException("Invalid URL", ex);
             }

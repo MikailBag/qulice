@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011-2023 Qulice.com
+ * Copyright (c) 2011-2024 Qulice.com
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +42,6 @@ import net.sourceforge.pmd.Report;
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.RulePriority;
 import net.sourceforge.pmd.RuleSetFactory;
-import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.util.ResourceLoader;
 import net.sourceforge.pmd.util.datasource.DataSource;
 
@@ -51,7 +51,6 @@ import net.sourceforge.pmd.util.datasource.DataSource;
  * @since 0.3
  */
 final class SourceValidator {
-
     /**
      * Rule context.
      */
@@ -61,6 +60,12 @@ final class SourceValidator {
      * Report listener.
      */
     private final PmdListener listener;
+
+    /**
+     * Report renderer (responsible for picking up additional
+     * PMD-generated reports with processing errors).
+     */
+    private final PmdRenderer renderer;
 
     /**
      * Rules.
@@ -74,6 +79,7 @@ final class SourceValidator {
     SourceValidator(final Environment env) {
         this.context = new RuleContext();
         this.listener = new PmdListener(env);
+        this.renderer = new PmdRenderer();
         this.config = new PMDConfiguration();
     }
 
@@ -84,7 +90,7 @@ final class SourceValidator {
      * @return Collection of violations.
      */
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-    public Collection<RuleViolation> validate(
+    public Collection<PmdError> validate(
         final Collection<DataSource> sources, final String path) {
         this.config.setRuleSets("com/qulice/pmd/ruleset.xml");
         this.config.setThreads(0);
@@ -101,25 +107,15 @@ final class SourceValidator {
             this.context.setSourceCodeFile(new File(name));
             this.validateOne(source);
         }
-        report.errors().forEachRemaining(
-            error -> Logger.error(
-                this,
-                "Processing error in %s: (%s) %s, %s[exception]",
-                error.getFile(),
-                error.getMsg(),
-                error.getDetail(),
-                error.getError()
-            )
+        this.renderer.exportTo(report);
+        report.errors().forEachRemaining(this.listener::onProcessingError);
+        report.configErrors().forEachRemaining(this.listener::onConfigError);
+        Logger.debug(
+            this,
+            "got %d errors",
+            this.listener.errors().size()
         );
-        report.configErrors().forEachRemaining(
-            error -> Logger.error(
-                this,
-                "Config error %s: %s",
-                error.rule().getName(),
-                error.issue()
-            )
-        );
-        return this.listener.getViolations();
+        return this.listener.errors();
     }
 
     /**
@@ -138,7 +134,7 @@ final class SourceValidator {
             factory,
             new LinkedList<>(Collections.singleton(source)),
             this.context,
-            Collections.emptyList()
+            Collections.singletonList(this.renderer)
         );
     }
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011-2023 Qulice.com
+ * Copyright (c) 2011-2024 Qulice.com
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +30,11 @@
  */
 package com.qulice.ant;
 
+import com.qulice.spi.Environment;
+import java.io.File;
+import java.util.Collection;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -42,22 +48,50 @@ public class AntEnvironmentTest {
 
     /**
      * AntEnvironment can build Classloader from org.apache.tools.ant.Project.
+     *
+     * It is also checked that this classloader does not depend on ant enviroment information.
      * @throws Exception If something wrong happens inside
      */
     @Test
-    @Disabled
-    @SuppressWarnings("PMD.UncommentedEmptyMethodBody")
     public void buildsClassloader() throws Exception {
+        final Environment env = new AntEnvironment(
+            new AntProject.Fake(
+                ignored -> {
+                    throw new UnsupportedOperationException();
+                },
+                () -> {
+                    throw new UnsupportedOperationException();
+                }
+            ),
+            new AntPath.Fake(new String[]{"/foo.java", "bar.java"}),
+            new File("/some/build/out"),
+            new AntPath.Fake(new String[]{"/libfoo", "/libbar"})
+        );
+        env.classloader();
     }
 
     /**
      * AntEnvironment can return the files matching the specified pattern.
+     *
      * @throws Exception If something wrong happens inside
      */
     @Test
-    @Disabled
-    @SuppressWarnings("PMD.UncommentedEmptyMethodBody")
     public void returnsFiles() throws Exception {
+        final Environment env = new AntEnvironment(
+            new AntProject.Fake(
+                ignored -> {
+                    throw new UnsupportedOperationException();
+                },
+                () -> {
+                    throw new UnsupportedOperationException();
+                }
+            ),
+            new AntPath.Fake(new String[]{"/foo.java", "bar.java"}),
+            new File("/some/build/out"),
+            new AntPath.Fake(new String[]{"/libfoo", "/libbar"})
+        );
+        final Collection<File> files = env.files("*");
+        MatcherAssert.assertThat(files, Matchers.containsInAnyOrder());
     }
 
     /**

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011-2023 Qulice.com
+ * Copyright (c) 2011-2024 Qulice.com
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,7 +73,7 @@ final class PmdAssert {
     }
 
     /**
-     * Validated given file against PMD.
+     * Validates given file against PMD.
      * @throws Exception In case of error.
      */
     public void validate() throws Exception {

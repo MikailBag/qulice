@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011-2023 Qulice.com
+ * Copyright (c) 2011-2024 Qulice.com
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -129,10 +130,10 @@ public final class QuliceTask extends Task {
             throw new BuildException("classpath not defined for QuliceTask");
         }
         return new AntEnvironment(
-            this.getProject(),
-            this.sources,
+            new AntProject.Default(this.getProject()),
+            new AntPath.Default(this.sources),
             this.classes,
-            this.classpath
+            new AntPath.Default(this.classpath)
         );
     }
 
