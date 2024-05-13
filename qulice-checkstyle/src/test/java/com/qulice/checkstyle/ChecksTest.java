@@ -38,12 +38,18 @@ import com.puppycrawl.tools.checkstyle.api.AuditListener;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.io.IOUtils;
 import org.cactoos.text.Joined;
+import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -60,7 +66,7 @@ import org.xml.sax.InputSource;
 final class ChecksTest {
 
     /**
-     * Test checkstyle for true negative.
+     * Test checkstyle for true positive.
      * @param dir Directory where test scripts are located.
      * @throws Exception If something goes wrong
      */
@@ -79,33 +85,21 @@ final class ChecksTest {
             ),
             StandardCharsets.UTF_8
             ).split("\n");
-        for (final String line : violations) {
-            final String[] sectors = line.split(":");
-            final Integer pos = Integer.valueOf(sectors[0]);
-            final String needle = sectors[1].trim();
-            MatcherAssert.assertThat(
-                collector.has(pos, needle),
-                Matchers.describedAs(
-                    String.format(
-                        "Line no.%d ('%s') not reported by %s: '%s'",
-                        pos,
-                        needle,
-                        dir,
-                        collector.summary()
-                    ),
-                    Matchers.is(true)
-                )
-            );
-        }
+        final List<Matcher<? super SimpleAuditEvent>> expected = Arrays
+                .stream(violations)
+                .map(line -> {
+                    final String[] sectors = line.split(":");
+                    final int pos = Integer.parseInt(sectors[0]);
+                    final String needle = sectors[1].trim();
+                    return new SimpleAuditEvent(pos, needle);
+                })
+                .map(Matchers::equalTo)
+                .collect(Collectors.toList());
+
         MatcherAssert.assertThat(
-            collector.eventCount(),
-            Matchers.describedAs(
-                String.format(
-                    "Got more violations that expected for directory %s (%s)",
-                    dir, collector.summary()
-                ),
-                Matchers.equalTo(violations.length)
-            )
+                "Reported violations don't match violations.txt: " + collector.summary(),
+                collector.events(),
+                Matchers.containsInAnyOrder(expected)
         );
     }
 
@@ -199,6 +193,33 @@ final class ChecksTest {
         ).map(s -> String.format("ChecksTest/%s", s));
     }
 
+
+    /**
+     * Simplified version of AuditEvent class with nicer toString
+     */
+    @EqualsAndHashCode
+    private static final class SimpleAuditEvent {
+        private final int line;
+        private final String message;
+        SimpleAuditEvent(int line, String message) {
+            this.line = line;
+            this.message = message;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%d:%s", line, message);
+        }
+
+        int line() {
+            return line;
+        }
+
+        String message() {
+            return message;
+        }
+    }
+
     /**
      * Mocked collector of checkstyle events.
      *
@@ -209,37 +230,21 @@ final class ChecksTest {
         /**
          * List of events received.
          */
-        private final List<AuditEvent> events = new LinkedList<>();
+        private final List<SimpleAuditEvent> events = new LinkedList<>();
 
         @Override
         public Object answer(final InvocationOnMock invocation) {
-            this.events.add((AuditEvent) invocation.getArguments()[0]);
+            final AuditEvent event = (AuditEvent) invocation.getArguments()[0];
+            this.events.add(new SimpleAuditEvent(event.getLine(), event.getMessage()));
             return null;
         }
 
         /**
-         * How many messages do we have?
-         * @return Amount of messages reported
+         * Returns all events recorded so far.
+         * @return Collection of events
          */
-        public int eventCount() {
-            return this.events.size();
-        }
-
-        /**
-         * Do we have this message for this line?
-         * @param line The number of the line
-         * @param msg The message we're looking for
-         * @return This message was reported for the give line?
-         */
-        public boolean has(final Integer line, final String msg) {
-            boolean has = false;
-            for (final AuditEvent event : this.events) {
-                if (event.getLine() == line && event.getMessage().equals(msg)) {
-                    has = true;
-                    break;
-                }
-            }
-            return has;
+        public Collection<SimpleAuditEvent> events() {
+            return Collections.unmodifiableCollection(this.events);
         }
 
         /**
@@ -247,18 +252,8 @@ final class ChecksTest {
          * @return The test summary of all events
          */
         public String summary() {
-            final List<String> msgs = new LinkedList<>();
-            for (final AuditEvent event : this.events) {
-                msgs.add(
-                    String.format(
-                        "%s:%s",
-                        event.getLine(),
-                        event.getMessage()
-                    )
-                );
-            }
+            final List<String> msgs = this.events.stream().map(Object::toString).collect(Collectors.toList());
             return new Joined("; ", msgs).toString();
         }
     }
-
 }
