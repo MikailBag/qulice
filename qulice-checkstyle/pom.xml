@@ -51,6 +51,12 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <!-- version from parent -->
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <!-- version from parent -->
