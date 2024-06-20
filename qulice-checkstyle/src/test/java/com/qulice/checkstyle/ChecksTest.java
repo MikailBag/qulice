@@ -261,4 +261,15 @@ final class ChecksTest {
         }
     }
 
+    final class Foo {
+        private final String test = "";
+        void bar(final String test) {
+            System.out.println("Hello: " + test);
+        }
+
+        void foo() {
+            System.out.println("Hello: " + test);
+        }
+    }
+
 }
